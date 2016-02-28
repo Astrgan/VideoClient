@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import uk.co.caprica.vlcj.component.DirectMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
@@ -32,6 +33,7 @@ public class Player {
     private WritablePixelFormat<ByteBuffer> pixelFormat;
     private FloatProperty videoSourceRatioProperty;
     private BorderPane borderPane;
+    MediaPlayer player;
 
 
 
@@ -44,8 +46,17 @@ public class Player {
         pixelFormat = PixelFormat.getByteBgraPreInstance();
         initializeImageView();
         borderPane = new BorderPane(playerHolder);
-        mediaPlayerComponent.getMediaPlayer().prepareMedia(videoPath);
-        mediaPlayerComponent.getMediaPlayer().start();
+        player = mediaPlayerComponent.getMediaPlayer();
+        player.prepareMedia(videoPath);
+        player.start();
+    }
+
+    public void pause(){
+        player.pause();
+    }
+
+    public void play(){
+        player.play();
     }
 
     public BorderPane getBorderPane() {
