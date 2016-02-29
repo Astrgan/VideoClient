@@ -76,8 +76,8 @@
             <InnerShadow />
          </effect>
          <children>
-            <Button layoutX="190.0" layoutY="48.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="65.0" />
-            <TextField layoutX="14.0" layoutY="59.0" prefHeight="31.0" prefWidth="165.0" />
+            <Button layoutX="190.0" layoutY="48.0" mnemonicParsing="false" onAction="#addCamera" prefHeight="53.0" prefWidth="65.0" />
+            <TextField fx:id="videoPath" layoutX="14.0" layoutY="59.0" prefHeight="31.0" prefWidth="165.0" />
          </children>
       </Pane>
    </children>
