@@ -12,6 +12,7 @@ public class CanvasResizable extends Canvas {
 
         parentProperty().addListener((ov, oldParent, parent) ->
                 this.widthProperty().bind(((Region) parent).widthProperty()));
+
         parentProperty().addListener((ov, oldParent, parent) ->
                 this.heightProperty().bind(((Region) parent).heightProperty()));
     }

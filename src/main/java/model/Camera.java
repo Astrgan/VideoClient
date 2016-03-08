@@ -39,6 +39,7 @@ public class Camera {
         height = (int) canvas.getHeight();
         channels = frame.channels();
         byteArray = new byte[width * height * channels];
+        System.out.println("width: " + width + " height: " + height);
     }
 
     public void Process(){
