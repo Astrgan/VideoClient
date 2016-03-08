@@ -42,26 +42,24 @@ public class MainWindowController {
             label.setOnMouseEntered(e -> ((Label) label).setTextFill(Color.BLUE));
             label.setOnMouseExited(e -> ((Label) label).setTextFill(Color.ORANGE));
         }
-        future = service.scheduleAtFixedRate((Runnable) () -> {
-            if(flag){
-                flag = false;
-                listCamera.forEach(Camera::Process);
-                flag = true;
-            }
-        },1000, 35, TimeUnit.MILLISECONDS);
+        future = service.scheduleAtFixedRate((Runnable) () -> process(),1000, 300, TimeUnit.MILLISECONDS);
 
 
     }
 
+    void process(){
+        if(flag){
+            flag = false;
+            listCamera.forEach(Camera::Process);
+            flag = true;
+        }else {
+            return;
+        }
+    }
+
     void resizePause(){
         future.cancel(true);
-        future = service.scheduleAtFixedRate((Runnable) () -> {
-            if(flag){
-                flag = false;
-                listCamera.forEach(Camera::Process);
-                flag = true;
-            }
-        },1000, 35, TimeUnit.MILLISECONDS);
+        future = service.scheduleAtFixedRate((Runnable) () -> process(),1000, 300, TimeUnit.MILLISECONDS);
     }
 
     @FXML
