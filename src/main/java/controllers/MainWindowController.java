@@ -5,45 +5,73 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import model.Camera;
 import org.opencv.core.Core;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class MainWindowController {
 
     @FXML
-    private GridPane videoGrid;
-    ArrayList<model.Camera> listCamera = new ArrayList<>();
-    Timer timer = new Timer();
+    private AnchorPane root;
     @FXML
     private TextField videoPath;
+    @FXML
+    private GridPane videoGrid;
+    ArrayList<model.Camera> listCamera = new ArrayList<>();
+    ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+    Future<?> future;
+    boolean flag = true;
+
 
     @FXML
     public void initialize(){
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        root.heightProperty().addListener(e-> resizePause());
+        root.widthProperty().addListener(e-> resizePause());
 
         for(final Node label : videoGrid.getChildren()){
             label.setOnMouseEntered(e -> ((Label) label).setTextFill(Color.BLUE));
             label.setOnMouseExited(e -> ((Label) label).setTextFill(Color.ORANGE));
         }
+        future = service.scheduleAtFixedRate((Runnable) () -> {
+            if(flag){
+                flag = false;
+                listCamera.forEach(Camera::Process);
+                flag = true;
+            }
+        },1000, 35, TimeUnit.MILLISECONDS);
 
-        videoGrid.getChildren().remove(0);//delete
 
+    }
+
+    void resizePause(){
+        future.cancel(true);
+        future = service.scheduleAtFixedRate((Runnable) () -> {
+            if(flag){
+                flag = false;
+                listCamera.forEach(Camera::Process);
+                flag = true;
+            }
+        },1000, 35, TimeUnit.MILLISECONDS);
     }
 
     @FXML
     void addCamera(ActionEvent event) {
 
         listCamera.add(new Camera(videoPath.getText()));
-        videoGrid.add(listCamera.get(listCamera.size()-1).getCanvas(),0,0);
-        listCamera.get(listCamera.size()-1).process();
+        int index = listCamera.size()-1;
+        ((Label)videoGrid.getChildren().get(index)).setGraphic(listCamera.get(index).getCanvas());
+        System.out.println("index: " + index);
+
     }
 
 

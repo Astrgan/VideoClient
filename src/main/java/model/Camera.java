@@ -1,51 +1,61 @@
 package model;
 
-
+import controllers.CanvasResizable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
-
 import java.nio.ByteBuffer;
 
 /**
- * Created by astrg_000 on 27.02.2016.
+ * Created by astrg_000 on 07.03.2016.
  */
 public class Camera {
 
-    VideoCapture camera;
+    CanvasResizable canvas;
+    PixelWriter pixelWriter;
     Mat frame;
-    String videoPath;
-
-    private Canvas canvas;
-    private PixelWriter pixelWriter;
-    final PixelFormat<ByteBuffer> pixelformat = PixelFormat.getByteRgbInstance();
+    VideoCapture camera;
+    final PixelFormat<ByteBuffer> pixelFormat = PixelFormat.getByteRgbInstance();
     byte[] byteArray;
+    int width, height, channels;
 
     public Camera(String videoPath) {
-        this.videoPath = videoPath;
+        canvas = new CanvasResizable();
+        frame = new Mat();
         pixelWriter = canvas.getGraphicsContext2D().getPixelWriter();
-        camera = new VideoCapture(0);
-        camera.open(0);
+        camera = new VideoCapture(videoPath);
+        canvas.heightProperty().addListener(e -> newSize());
+        canvas.widthProperty().addListener(e -> newSize());
+        camera.read(frame);
+        byteArray = new byte[width * height * channels];
+    }
+
+    void newSize(){
+        width = (int) canvas.getWidth();
+        height = (int) canvas.getHeight();
+        channels = frame.channels();
+        byteArray = new byte[width * height * channels];
+    }
+
+    public void Process(){
+        if (camera.isOpened()){
+            camera.read(frame);
+            Imgproc.resize(frame, frame, new Size(width, height));
+            frame.get(0, 0, byteArray);
+            pixelWriter.setPixels(0, 0, frame.width(), frame.height(), pixelFormat, byteArray, 0, frame.width() * frame.channels());
+        }else {
+            System.out.println("Error");
+        }
     }
 
     public Canvas getCanvas() {
         return canvas;
     }
 
-    public void process(){
-//        while (true) {
-            camera.read(frame);
-            Imgproc.resize(frame, frame, new Size(canvas.getWidth(), canvas.getHeight()));
-            byteArray = new byte[(int) frame.total() * frame.channels()];
-            frame.get(0, 0, byteArray);
-            pixelWriter.setPixels(0, 0, frame.width(), frame.height(), pixelformat, byteArray, 0, frame.width() * frame.channels());
-//        }
-    }
 
 
-}//END MAIN CLASS: "Camera"
+}

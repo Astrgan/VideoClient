@@ -8,14 +8,4 @@
     <artifactId>VideoClient</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <dependencies>
-        <dependency>
-            <groupId>uk.co.caprica</groupId>
-            <artifactId>vlcj</artifactId>
-            <version>3.10.1</version>
-        </dependency>
-
-    </dependencies>
-
-
 </project>
