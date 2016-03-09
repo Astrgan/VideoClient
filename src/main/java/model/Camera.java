@@ -43,20 +43,22 @@ public class Camera {
     }
 
     public void Process(){
-        if (camera.isOpened()){
-            camera.read(frame);
-            Imgproc.resize(frame, frame, new Size(width, height));
-            frame.get(0, 0, byteArray);
-            pixelWriter.setPixels(0, 0, frame.width(), frame.height(), pixelFormat, byteArray, 0, frame.width() * frame.channels());
-        }else {
-            System.out.println("Error");
+        try {
+            if (camera.isOpened()){
+                camera.read(frame);
+                Imgproc.resize(frame, frame, new Size(width, height));
+                frame.get(0, 0, byteArray);
+                pixelWriter.setPixels(0, 0, frame.width(), frame.height(), pixelFormat, byteArray, 0, frame.width() * frame.channels());
+            }else {
+                System.out.println("Error");
+            }
+        }catch (Exception e){
+            System.out.println("ErrorException: " + e);
         }
     }
 
     public Canvas getCanvas() {
         return canvas;
     }
-
-
 
 }

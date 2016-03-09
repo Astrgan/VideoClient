@@ -26,8 +26,7 @@ public class MainWindowController {
     @FXML
     private GridPane videoGrid;
     ArrayList<model.Camera> listCamera = new ArrayList<>();
-    ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-    Future<?> future;
+    Thread thread;
     boolean flag = true;
 
 
@@ -42,24 +41,32 @@ public class MainWindowController {
             label.setOnMouseEntered(e -> ((Label) label).setTextFill(Color.BLUE));
             label.setOnMouseExited(e -> ((Label) label).setTextFill(Color.ORANGE));
         }
-        future = service.scheduleAtFixedRate((Runnable) () -> process(),1000, 300, TimeUnit.MILLISECONDS);
+        serviceRUN();
 
 
     }
 
-    void process(){
-        if(flag){
-            flag = false;
-            listCamera.forEach(Camera::Process);
-            flag = true;
-        }else {
-            return;
-        }
+    void serviceRUN(){
+        thread = new Thread(() -> {
+            while (true) {
+                listCamera.forEach(Camera::Process);
+                try {
+                    Thread.sleep(35);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
     }
 
     void resizePause(){
-        future.cancel(true);
-        future = service.scheduleAtFixedRate((Runnable) () -> process(),1000, 300, TimeUnit.MILLISECONDS);
+        try {
+            thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+
+        }
     }
 
     @FXML
@@ -69,7 +76,5 @@ public class MainWindowController {
         int index = listCamera.size()-1;
         ((Label)videoGrid.getChildren().get(index)).setGraphic(listCamera.get(index).getCanvas());
         System.out.println("index: " + index);
-
     }
-
 }
