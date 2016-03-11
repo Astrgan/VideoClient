@@ -26,7 +26,7 @@ public class MainWindowController {
     @FXML
     private GridPane videoGrid;
     ArrayList<model.Camera> listCamera = new ArrayList<>();
-    Thread thread;
+    public Thread thread;
     boolean flag = true;
 
 
@@ -43,16 +43,16 @@ public class MainWindowController {
         }
         serviceRUN();
 
-
+//        root.getScene().getWindow().setOnCloseRequest(event -> thread.interrupt());
     }
 
     void serviceRUN(){
         thread = new Thread(() -> {
-            while (true) {
+            while (!Thread.interrupted()) {
                 listCamera.forEach(Camera::Process);
                 try {
-                    Thread.sleep(35);
-                } catch (InterruptedException e) {
+                    Thread.sleep(15);
+                } catch (InterruptedException e ) {
                     e.printStackTrace();
                 }
             }
@@ -71,10 +71,12 @@ public class MainWindowController {
 
     @FXML
     void addCamera(ActionEvent event) {
-
+        thread.interrupt();
         listCamera.add(new Camera(videoPath.getText()));
         int index = listCamera.size()-1;
         ((Label)videoGrid.getChildren().get(index)).setGraphic(listCamera.get(index).getCanvas());
         System.out.println("index: " + index);
+        thread.start();
     }
+
 }
