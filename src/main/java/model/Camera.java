@@ -19,6 +19,7 @@ public class Camera {
     PixelWriter pixelWriter;
     Mat frame;
     VideoCapture camera;
+    Size size;
     final PixelFormat<ByteBuffer> pixelFormat = PixelFormat.getByteRgbInstance();
     byte[] byteArray;
     int width, height, channels;
@@ -31,14 +32,17 @@ public class Camera {
         canvas.heightProperty().addListener(e -> newSize());
         canvas.widthProperty().addListener(e -> newSize());
         camera.read(frame);
-        byteArray = new byte[width * height * channels];
+        newSize();
     }
 
     void newSize(){
         width = (int) canvas.getWidth();
         height = (int) canvas.getHeight();
         channels = frame.channels();
+        byteArray = null;
+        size = null;
         byteArray = new byte[width * height * channels];
+        size = new Size(width, height);
         System.out.println("width: " + width + " height: " + height);
     }
 
@@ -46,7 +50,7 @@ public class Camera {
         try {
             if (camera.isOpened()){
                 camera.read(frame);
-                Imgproc.resize(frame, frame, new Size(width, height));
+                Imgproc.resize(frame, frame, size);
                 frame.get(0, 0, byteArray);
                 pixelWriter.setPixels(0, 0, frame.width(), frame.height(), pixelFormat, byteArray, 0, frame.width() * frame.channels());
             }else {

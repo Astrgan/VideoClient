@@ -12,10 +12,6 @@ import model.Camera;
 import org.opencv.core.Core;
 
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class MainWindowController {
 
@@ -26,8 +22,7 @@ public class MainWindowController {
     @FXML
     private GridPane videoGrid;
     ArrayList<model.Camera> listCamera = new ArrayList<>();
-    public Thread thread;
-    boolean flag = true;
+    public Thread threadCameraProcess;
 
 
     @FXML
@@ -43,26 +38,25 @@ public class MainWindowController {
         }
         serviceRUN();
 
-//        root.getScene().getWindow().setOnCloseRequest(event -> thread.interrupt());
     }
 
     void serviceRUN(){
-        thread = new Thread(() -> {
+        threadCameraProcess = new Thread(() -> {
             while (!Thread.interrupted()) {
                 listCamera.forEach(Camera::Process);
                 try {
                     Thread.sleep(15);
                 } catch (InterruptedException e ) {
-                    e.printStackTrace();
+                    break;
                 }
             }
         });
-        thread.start();
+        threadCameraProcess.start();
     }
 
     void resizePause(){
         try {
-            thread.sleep(1000);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
 
@@ -71,12 +65,21 @@ public class MainWindowController {
 
     @FXML
     void addCamera(ActionEvent event) {
-        thread.interrupt();
-        listCamera.add(new Camera(videoPath.getText()));
-        int index = listCamera.size()-1;
-        ((Label)videoGrid.getChildren().get(index)).setGraphic(listCamera.get(index).getCanvas());
-        System.out.println("index: " + index);
-        thread.start();
+
+        threadCameraProcess.interrupt();
+        try {
+            threadCameraProcess.join();
+            listCamera.add(new Camera(videoPath.getText()));
+            videoPath.clear();
+            int index = listCamera.size()-1;
+            ((Label)videoGrid.getChildren().get(index)).setGraphic(listCamera.get(index).getCanvas());
+            System.out.println("index: " + index);
+            serviceRUN();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 }
