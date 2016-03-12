@@ -9,8 +9,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import model.Camera;
+import model.VideoSocket;
 import org.opencv.core.Core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainWindowController {
@@ -23,6 +25,7 @@ public class MainWindowController {
     private GridPane videoGrid;
     ArrayList<model.Camera> listCamera = new ArrayList<>();
     public Thread threadCameraProcess;
+    VideoSocket videoSocket;
 
 
     @FXML
@@ -37,6 +40,19 @@ public class MainWindowController {
             label.setOnMouseExited(e -> ((Label) label).setTextFill(Color.ORANGE));
         }
         serviceRUN();
+
+        try {
+            videoSocket = new VideoSocket("127.0.0.1", 1234) {
+                @Override
+                public void callback(String path) {
+                    createCamera(path);
+                    System.out.println("Hello callback");
+                }
+            };
+        } catch (IOException e) {
+            System.out.println("ошибка подключения к серверу");
+        }
+        videoSocket.getPaths();
 
     }
 
@@ -65,21 +81,38 @@ public class MainWindowController {
 
     @FXML
     void addCamera(ActionEvent event) {
+        createCamera(videoPath.getText());
 
+    }
+
+    void createCamera(String path){
+        System.out.println("createCamera::" + path);
         threadCameraProcess.interrupt();
         try {
             threadCameraProcess.join();
-            listCamera.add(new Camera(videoPath.getText()));
+            listCamera.add(new Camera(path));
             videoPath.clear();
             int index = listCamera.size()-1;
-            ((Label)videoGrid.getChildren().get(index)).setGraphic(listCamera.get(index).getCanvas());
+            Label label = ((Label)videoGrid.getChildren().get(index));
+            label.setGraphic(listCamera.get(index).getCanvas());
+            label.setText(" ");
             System.out.println("index: " + index);
             serviceRUN();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
 
+    public void stop(){
+        threadCameraProcess.interrupt();
+        videoSocket.stop();
+    }
 
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("finalize");
+        threadCameraProcess.interrupt();
+        super.finalize();
     }
 
 }
