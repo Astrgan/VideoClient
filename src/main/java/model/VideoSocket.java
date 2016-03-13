@@ -1,9 +1,5 @@
 package model;
 
-import com.sun.tracing.dtrace.FunctionAttributes;
-import com.sun.tracing.dtrace.FunctionName;
-import jdk.nashorn.internal.objects.annotations.Function;
-import jdk.nashorn.internal.objects.annotations.SpecializedFunction;
 
 import java.io.*;
 import java.net.Socket;
@@ -42,6 +38,7 @@ public abstract class VideoSocket{
     public void pushPath(String message){
 
         try {
+            message += "\n";
             out.writeInt(message.length()+1);
             out.writeChar('2');
             out.writeChars(message);
@@ -67,9 +64,10 @@ public abstract class VideoSocket{
     public void stop(){
 
         try {
-//            System.out.println("stopSocket");
-            answers.setStop();
+            System.out.println("stopSocket");
+            answers.interrupt();
             answers.join();
+            System.out.println("stopSocket LAST join");
             bos.close();
             out.close();
             inputServer.close();
@@ -81,24 +79,17 @@ public abstract class VideoSocket{
 
     class Answers extends Thread {
 
-        private boolean stop = false;
-        public void setStop() {
-            stop = true;
-        }
-
         @Override
         public void run() {
-            try {
-                while (!stop) {
-                    String str = inputServer.readLine();
-                    System.out.println(str.substring(2,str.length()));
-                    if(!str.isEmpty() | !str.equals("\n")) callback(str.substring(2,str.length()-2));
-                }
 
-            } catch (IOException e) {
-                System.err.println("Ошибка при получении сообщения.");
-                e.printStackTrace();
+            while (!this.isInterrupted()) try {
+                String str = inputServer.readLine();
+                if (!str.isEmpty() && !str.equals("\n")) callback(str.substring(2, str.length()).trim());
+            } catch (Exception e) {
+                System.out.println("Answers: " + e);
+                break;
             }
+
         }
     }
 

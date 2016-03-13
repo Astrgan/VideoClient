@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -45,7 +46,10 @@ public class MainWindowController {
             videoSocket = new VideoSocket("127.0.0.1", 1234) {
                 @Override
                 public void callback(String path) {
-                    createCamera(path);
+//                    createCamera(path);
+
+                    Platform.runLater(() -> createCamera(path));
+
                     System.out.println("Hello callback");
                 }
             };
@@ -75,13 +79,13 @@ public class MainWindowController {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
-
         }
     }
 
     @FXML
     void addCamera(ActionEvent event) {
-        createCamera(videoPath.getText());
+        videoSocket.pushPath(videoPath.getText());
+//        createCamera(videoPath.getText());
 
     }
 
