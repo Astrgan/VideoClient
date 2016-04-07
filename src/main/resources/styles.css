@@ -1,0 +1,24 @@
+.background {
+    -fx-background-color: #3C3F41;
+}
+
+.list-cell {
+    -fx-text-fill: #3C3F41;
+    -fx-text-fill: white;
+    -fx-padang: 0;
+    }
+
+.list-cell:odd {
+    -fx-background-color: #3C3F41;
+    -fx-text-fill: white;
+    }
+
+.list-cell:even {
+    -fx-background-color: #3C3F41;
+    -fx-text-fill: white;
+    }
+
+.list-cell:filled:hover {
+    -fx-text-fill: red;
+    }
+

@@ -10,7 +10,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="907.0" prefWidth="1285.0" style="-fx-background-color: #3C3F41;" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainWindowController">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="907.0" prefWidth="1285.0" styleClass="background" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainWindowController">
    <children>
       <GridPane fx:id="videoGrid" hgap="10.0" layoutY="17.0" prefHeight="875.0" prefWidth="976.0" vgap="20.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="299.0" AnchorPane.topAnchor="17.0">
         <columnConstraints>
@@ -71,13 +71,16 @@
             </Label>
          </children>
       </GridPane>
-      <Pane layoutX="1002.0" layoutY="14.0" prefHeight="875.0" prefWidth="280.0" style="-fx-background-color: #3C3F41;" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <Pane layoutX="1005.0" layoutY="5.0" prefHeight="875.0" prefWidth="280.0" styleClass="background" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
          <effect>
             <InnerShadow />
          </effect>
          <children>
-            <Button layoutX="190.0" layoutY="48.0" mnemonicParsing="false" onAction="#addCamera" prefHeight="53.0" prefWidth="65.0" />
-            <TextField fx:id="videoPath" layoutX="14.0" layoutY="59.0" prefHeight="31.0" prefWidth="165.0" />
+            <Button layoutX="196.0" layoutY="117.0" mnemonicParsing="false" onAction="#addCamera" prefHeight="53.0" prefWidth="69.0" text="ADD" />
+            <TextField fx:id="videoPath" layoutX="14.0" layoutY="59.0" prefHeight="31.0" prefWidth="256.0" />
+            <Button layoutX="196.0" layoutY="193.0" mnemonicParsing="false" onAction="#addCamera" prefHeight="53.0" prefWidth="69.0" text="DELETE" />
+            <ListView fx:id="listView" layoutX="10.0" layoutY="317.0" prefHeight="562.0" prefWidth="266.0" styleClass="background" />
+            <Line endX="100.0" layoutX="140.0" layoutY="297.0" startX="-100.0" />
          </children>
       </Pane>
    </children>

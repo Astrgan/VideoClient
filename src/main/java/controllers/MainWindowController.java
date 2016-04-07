@@ -1,10 +1,13 @@
 package controllers;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -24,6 +27,9 @@ public class MainWindowController {
     private TextField videoPath;
     @FXML
     private GridPane videoGrid;
+    @FXML
+    private ListView<String> listView;
+    ObservableList<String> listData = FXCollections.observableArrayList();
     ArrayList<model.Camera> listCamera = new ArrayList<>();
     public Thread threadCameraProcess;
     VideoSocket videoSocket;
@@ -47,16 +53,19 @@ public class MainWindowController {
                 @Override
                 public void callback(String path) {
 //                    createCamera(path);
-
-                    Platform.runLater(() -> createCamera(path));
-
-                    System.out.println("Hello callback");
+//                    System.out.println(path);
+                    if(path.charAt(0) == '1'){
+                        System.out.println(path.substring(1));
+                        Platform.runLater(() -> createCamera(path.substring(1)));
+                        System.out.println("Hello callback");
+                    }
                 }
             };
         } catch (IOException e) {
             System.out.println("ошибка подключения к серверу");
         }
         videoSocket.getPaths();
+        listView.setItems(listData);
 
     }
 
@@ -85,9 +94,8 @@ public class MainWindowController {
     @FXML
     void addCamera(ActionEvent event) {
         videoSocket.pushPath(videoPath.getText());
-//        createCamera(videoPath.getText());
 
-    }
+        }
 
     void createCamera(String path){
         System.out.println("createCamera::" + path);
@@ -101,6 +109,7 @@ public class MainWindowController {
             label.setGraphic(listCamera.get(index).getCanvas());
             label.setText(" ");
             System.out.println("index: " + index);
+            listData.add(path);
             serviceRUN();
         } catch (InterruptedException e) {
             e.printStackTrace();
