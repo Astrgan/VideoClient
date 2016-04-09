@@ -84,6 +84,7 @@ public abstract class VideoSocket{
 
             while (!this.isInterrupted()) try {
                 String str = inputServer.readLine();
+                System.out.println("***********************"+str);
                 if (!str.isEmpty() && !str.equals("\n")) callback(str.substring(2, str.length()).trim());
 
             } catch (Exception e) {

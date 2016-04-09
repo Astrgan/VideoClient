@@ -51,13 +51,15 @@ public class MainWindowController {
         try {
             videoSocket = new VideoSocket("127.0.0.1", 1234) {
                 @Override
-                public void callback(String path) {
+                public void callback(String str) {
 //                    createCamera(path);
 //                    System.out.println(path);
-                    if(path.charAt(0) == '1'){
-                        System.out.println(path.substring(1));
-                        Platform.runLater(() -> createCamera(path.substring(1)));
+                    if(str.charAt(0) == '1'){
+                        System.out.println(str.substring(1));
+                        Platform.runLater(() -> createCamera(str.substring(1)));
                         System.out.println("Hello callback");
+                    }else if (str.charAt(0) == '2'){
+                        Platform.runLater(() -> listData.add(str));
                     }
                 }
             };
@@ -109,7 +111,6 @@ public class MainWindowController {
             label.setGraphic(listCamera.get(index).getCanvas());
             label.setText(" ");
             System.out.println("index: " + index);
-            listData.add(path);
             serviceRUN();
         } catch (InterruptedException e) {
             e.printStackTrace();
